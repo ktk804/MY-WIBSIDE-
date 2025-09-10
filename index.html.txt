@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editable Website App</title>
+
+<!-- Manifest for PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#007BFF">
+
+<style>
+    /* Base styles */
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Arial',sans-serif;line-height:1.6;scroll-behavior:smooth;background-color:#f4f7f9;color:#333;transition:all 0.4s ease;}
+    header{background:linear-gradient(135deg,#007BFF,#00C6FF);color:white;padding:50px 20px;text-align:center;position:relative;transition:background 0.4s ease;}
+    header h1{font-size:2.8em;margin-bottom:10px;}
+    header p{font-size:1.2em;}
+    nav{display:flex;justify-content:center;background-color:#0056b3;padding:10px 0;position:sticky;top:0;z-index:100;transition:background 0.4s ease;}
+    nav a{color:white;margin:0 20px;text-decoration:none;font-weight:bold;transition:color 0.3s;}
+    nav a:hover{color:#ffdd57;}
+    .theme-buttons{position:absolute;top:20px;right:20px;}
+    .theme-buttons button{margin-left:10px;padding:8px 12px;border:none;border-radius:5px;cursor:pointer;background:#fff;color:#333;font-weight:bold;transition:all 0.3s;}
+    .theme-buttons button:hover{background:#ddd;}
+    .container{max-width:1000px;margin:40px auto;padding:0 20px;}
+    section{background-color:white;padding:40px 30px;border-radius:12px;margin-bottom:40px;box-shadow:0 6px 20px rgba(0,0,0,0.1);opacity:0;transform:translateY(20px);transition:all 0.8s ease-out, background-color 0.4s, color 0.4s;}
+    section.visible{opacity:1;transform:translateY(0);}
+    h2{font-size:2em;margin-bottom:20px;}
+    p{font-size:1.1em;line-height:1.8;}
+    .editable{padding:5px 10px;border-radius:5px;background-color:#f0f0f0;transition:background-color 0.4s;}
+    .editable:focus{outline:2px solid #007BFF;background-color:#e6f0ff;}
+    button.save{padding:12px 25px;background:linear-gradient(135deg,#28a745,#00c851);color:white;border:none;border-radius:50px;cursor:pointer;font-size:1em;transition:transform 0.3s, box-shadow 0.3s;}
+    button.save:hover{transform:translateY(-3px);box-shadow:0 8px 15px rgba(0,0,0,0.2);}
+    img{max-width:100%;border-radius:10px;margin:20px 0;transition:all 0.4s ease;}
+    @media(max-width:768px){nav{flex-direction:column;}nav a{margin:10px 0;}}
+    body.dark{background-color:#121212;color:#e0e0e0;}
+    body.dark header{background:linear-gradient(135deg,#1a1a1a,#333);}
+    body.dark nav{background-color:#222;}
+    body.dark nav a:hover{color:#ffbb33;}
+    body.dark section{background-color:#1f1f1f;color:#e0e0e0;}
+    body.dark .editable{background-color:#2a2a2a;color:#fff;}
+    body.dark .editable:focus{background-color:#444;}
+</style>
+</head>
+<body>
+
+<header>
+    <h1 contenteditable="true" class="editable" id="site-title">My Website</h1>
+    <p contenteditable="true" class="editable" id="site-subtitle">Editable modern website with themes</p>
+    <div class="theme-buttons">
+        <button onclick="setTheme('light')">Light</button>
+        <button onclick="setTheme('dark')">Dark</button>
+        <button onclick="setTheme('blue')">Blue</button>
+    </div>
+</header>
+
+<nav>
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="#contact">Contact</a>
+</nav>
+
+<div class="container">
+
+    <section id="home">
+        <h2 contenteditable="true" class="editable" id="home-title">Home Section</h2>
+        <p contenteditable="true" class="editable" id="home-text">Welcome to your editable website. Change text and images freely!</p>
+        <img src="https://via.placeholder.com/800x400" id="home-image" alt="Editable Image">
+        <input type="file" id="homeImageUpload" accept="image/*">
+    </section>
+
+    <section id="about">
+        <h2 contenteditable="true" class="editable" id="about-title">About Us</h2>
+        <p contenteditable="true" class="editable" id="about-text">This section is editable. Share your story here.</p>
+    </section>
+
+    <section id="services">
+        <h2 contenteditable="true" class="editable" id="services-title">Our Services</h2>
+        <p contenteditable="true" class="editable" id="services-text">Describe your services. All content is editable and saved locally.</p>
+    </section>
+
+    <section id="contact">
+        <h2 contenteditable="true" class="editable" id="contact-title">Contact Us</h2>
+        <p contenteditable="true" class="editable" id="contact-text">Provide your email or phone number here.</p>
+        <button class="save" onclick="saveContent()">Save Content</button>
+    </section>
+
+</div>
+
+<script>
+    function saveContent() {
+        const content = {
+            siteTitle: document.getElementById('site-title').innerText,
+            siteSubtitle: document.getElementById('site-subtitle').innerText,
+            homeTitle: document.getElementById('home-title').innerText,
+            homeText: document.getElementById('home-text').innerText,
+            homeImage: document.getElementById('home-image').src,
+            aboutTitle: document.getElementById('about-title').innerText,
+            aboutText: document.getElementById('about-text').innerText,
+            servicesTitle: document.getElementById('services-title').innerText,
+            servicesText: document.getElementById('services-text').innerText,
+            contactTitle: document.getElementById('contact-title').innerText,
+            contactText: document.getElementById('contact-text').innerText,
+            theme: document.body.dataset.theme || 'light'
+        };
+        localStorage.setItem('websiteContent', JSON.stringify(content));
+        alert("Content saved successfully!");
+    }
+
+    window.onload = function() {
+        const savedContent = JSON.parse(localStorage.getItem('websiteContent'));
+        if(savedContent){
+            document.getElementById('site-title').innerText = savedContent.siteTitle;
+            document.getElementById('site-subtitle').innerText = savedContent.siteSubtitle;
+            document.getElementById('home-title').innerText = savedContent.homeTitle;
+            document.getElementById('home-text').innerText = savedContent.homeText;
+            document.getElementById('home-image').src = savedContent.homeImage;
+            document.getElementById('about-title').innerText = savedContent.aboutTitle;
+            document.getElementById('about-text').innerText = savedContent.aboutText;
+            document.getElementById('services-title').innerText = savedContent.servicesTitle;
+            document.getElementById('services-text').innerText = savedContent.servicesText;
+            document.getElementById('contact-title').innerText = savedContent.contactTitle;
+            document.getElementById('contact-text').innerText = savedContent.contactText;
+            if(savedContent.theme) setTheme(savedContent.theme);
+        }
+        animateSections();
+    }
+
+    document.getElementById('homeImageUpload').addEventListener('change', function(event){
+        const reader = new FileReader();
+        reader.onload = function(){ document.getElementById('home-image').src = reader.result; }
+        reader.readAsDataURL(event.target.files[0]);
+    });
+
+    function animateSections() {
+        const sections = document.querySelectorAll('section');
+        window.addEventListener('scroll', () => {
+            sections.forEach(section => {
+                const top = section.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                if(top < windowHeight - 100) section.classList.add('visible');
+            });
+        });
+        sections.forEach(section => {
+            const top = section.getBoundingClientRect().top;
+            if(top < window.innerHeight - 100) section.classList.add('visible');
+        });
+    }
+
+    function setTheme(theme) {
+        document.body.dataset.theme = theme;
+        if(theme === 'dark') document.body.classList.add('dark');
+        else document.body.classList.remove('dark');
+        if(theme === 'blue'){
+            document.body.style.backgroundColor = '#e0f7ff';
+            document.querySelector('header').style.background = 'linear-gradient(135deg,#007BFF,#00C6FF)';
+        } else {
+            document.body.style.backgroundColor = '';
+            document.querySelector('header').style.background = '';
+        }
+    }
+
+    // Register Service Worker
+    if('serviceWorker' in navigator){
+        navigator.serviceWorker.register('service-worker.js')
+        .then(()=>console.log('Service Worker Registered'))
+        .catch(err=>console.log(err));
+    }
+</script>
+
+</body>
+</html>
